@@ -106,13 +106,11 @@ Twitter.get("statuses/user_timeline",
                 var text = data[i].text;
                 var id = data[i].id_str;
                 if (text.includes(matchstring)) {
-                  console.log("tweet:", data[i].created_at, text, id);
+                  console.log("Attempting to retweet:", data[i].created_at, text, id);
                   retweet(id);
                 } else {
                   skipped.push(text);
                 }
               }
-              console.log();
-              console.log();
               console.log("Skipped", skipped.length, "irrelevant tweets.");
            })
