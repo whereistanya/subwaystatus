@@ -1,0 +1,29 @@
+{
+  "name": "subwaystatus",
+  "version": "1.0.0",
+  "description": "Tweet about subways. Mostly the F train.",
+  "main": "app.js",
+  "dependencies": {
+    "cheerio": "^0.22.0",
+    "mta-service-status": "^0.0.1",
+    "twitter": "^1.4.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/whereistanya/subwaystatus.git"
+  },
+  "keywords": [
+    "subway",
+    "ftrain"
+  ],
+  "author": "noideadog",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/whereistanya/subwaystatus/issues"
+  },
+  "homepage": "https://github.com/whereistanya/subwaystatus#readme"
+}
