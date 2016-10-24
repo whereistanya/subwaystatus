@@ -87,7 +87,6 @@ function make_tweets(html) {
 
 /*** main ***/
 
-/*
 // First check whether the MTA service status has anything interesting.
 MTA.getServiceStatus('subway', train).then(function(result) {
   console.log("status of", train, "train:", result.status);
@@ -111,7 +110,7 @@ MTA.getServiceStatus('subway', train).then(function(result) {
       console.warn("Couldn't tweet:", e);
     }
   }
-})*/
+})
 
 // users and what to search for in their statuses
 var twittersearch = {
@@ -128,7 +127,7 @@ for (user in twittersearch) {
 
   (function(user, matchstring) {
     Twitter.get("statuses/user_timeline",
-                {screen_name: user, count: 100, exclude_replies: true,
+                {screen_name: user, count: 50, exclude_replies: true,
                  include_rts: false}, function(error, data) {
                   var skipped = []
                   if (error) {
