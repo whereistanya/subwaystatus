@@ -1,6 +1,7 @@
 var MTA = require('mta-service-status');
 var TwitterPackage = require("twitter");
 var cheerio = require('cheerio');
+require('console-stamp')(console, '[HH:MM:ss.l]');
 
 var secret = require("./credentials_subwaystatus");
 /* Create a twitter account, generate keys at apps.twitter.com, and add a file
@@ -106,7 +107,7 @@ MTA.getServiceStatus('subway', train).then(function(result) {
       console.log("Attempting to tweet:", summary);
       tweet(summary);
     } catch (e) {
-      console.log("Couldn't tweet:", e);
+      console.warn("Couldn't tweet:", e);
     }
   }
 })

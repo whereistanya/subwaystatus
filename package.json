@@ -5,6 +5,7 @@
   "main": "app.js",
   "dependencies": {
     "cheerio": "^0.22.0",
+    "console-stamp": "^0.2.4",
     "mta-service-status": "^0.0.1",
     "twitter": "^1.4.0"
   },
