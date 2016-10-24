@@ -49,13 +49,39 @@ function retweet(tweetid) {
                })
 }
 
-function make_tweet(text) {
-  var parsedHTML = cheerio.load(text);
-  var text = parsedHTML.text().trim().replace(
-    /(?:\r\n|\r|\n)/g, '').replace(/\s\s+/g, ' ');
+// Return an array of statuses to tweet. Since train status is batched by line,
+// attempt to pull out relevant information. For example, E train information is
+// provided as part of a single ACE status. If the status doesn't include [E],
+// we skip it. We also skip less exciting stuff like alternate routes.
+function make_tweets(html, tldr) {
+  var parsedHTML = cheerio.load(html);
+  var lines = parsedHTML.text().split(/\r\n\s*\r\n/);
+  matchstring = "[" + train + "]";
 
-  summary = text.slice(0, 140);
-  return summary;
+  var keep = []
+  var skipped = []
+  for (var i = 0; i < lines.length; i++) {
+    var text = lines[i].trim();
+    if (text.includes(matchstring)) {
+      if (text.indexOf("For service ", 0) === 0) {
+        continue;
+      }
+      if (text.indexOf("Travel Alternatives", 0) === 0) {
+        continue;
+      }
+      if (text.indexOf("From", 0) === 0) {
+        continue;
+      }
+      summary = tldr + ":" + text.replace(/(?:\r\n|\r|\n)/g, ' ');
+      keep.push(summary.slice(0, 140));
+    } else {
+      skipped.push(text);
+    }
+  }
+  if (keep.length == 0) {
+    console.log("Skipped", skipped.length, "irrelevant lines.");
+  }
+  return keep;
 }
 
 /*** main ***/
@@ -63,37 +89,30 @@ function make_tweet(text) {
 // First check whether the MTA service status has anything interesting.
 MTA.getServiceStatus('subway', train).then(function(result) {
   console.log("status of", train, "train:", result.status);
-  var summary = ""
+  if (result.status === "GOOD SERVICE") {
+    console.log("good service");
+    return;
+  }
   try {
-    summary = make_tweet(result.html);
+    statuses = make_tweets(result.html, result.status);
   } catch (e) {
-    console.warn("Couldn't create a tweet to post:", e);
+    console.warn("Couldn't create tweets to post:", e);
     return
   }
 
-  switch(result.status) {
-    case "GOOD SERVICE":
-      summary = "Everything is ok.";
-      break;
-    case "DELAYS":
-      break;
-    case "PLANNED WORK":
-      break;
-    default:
-      console.log("Got unexpected status:", result.status);
-      break;
-  }
-
-  if (summary) {
-    console.log("Attempting to tweet:", summary);
-    tweet(summary);
-  } else {
-    console.log("No summary. Not tweeting");
+  for (var i = 0; i < statuses.length; i++) {
+    try {
+      summary = statuses[i]
+      console.log("Attempting to tweet:", summary);
+      tweet(summary);
+    } catch (e) {
+      console.log("Couldn't tweet:", e);
+    }
   }
 })
 
+// Retweet anything the official NYCTSubway account has to say about the train.
 var matchstring = " " + train + " ";
-
 Twitter.get("statuses/user_timeline",
             {screen_name: 'NYCTSubway', count: 100, exclude_replies: true,
              include_rts: false}, function(error, data) {
