@@ -104,7 +104,6 @@ MTA.getServiceStatus('subway', train).then(function(result) {
   for (var i = 0; i < statuses.length; i++) {
     try {
       summary = statuses[i]
-      console.log("Attempting to tweet:", summary);
       tweet(summary);
     } catch (e) {
       console.warn("Couldn't tweet:", e);
@@ -138,7 +137,6 @@ for (user in twittersearch) {
                     var text = data[i].text;
                     var id = data[i].id_str;
                     if (text.includes(matchstring)) {
-                      console.log("Attempting to retweet:", data[i].created_at, text, id);
                       retweet(id);
                     } else {
                       skipped.push(text);
