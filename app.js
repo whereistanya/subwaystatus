@@ -117,6 +117,7 @@ MTA.getServiceStatus('subway', train).then(function(result) {
 var twittersearch = {
   "NYCTSubway": " " + train + " ",
   "amNewYork": train + " train",
+  "DNAinfoNY": train + " train",
 }
 
 // Retweet anything a list of twitter accounts has to say about the train. We
