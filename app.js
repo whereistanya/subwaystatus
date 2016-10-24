@@ -87,6 +87,7 @@ function make_tweets(html) {
 
 /*** main ***/
 
+/*
 // First check whether the MTA service status has anything interesting.
 MTA.getServiceStatus('subway', train).then(function(result) {
   console.log("status of", train, "train:", result.status);
@@ -110,27 +111,41 @@ MTA.getServiceStatus('subway', train).then(function(result) {
       console.warn("Couldn't tweet:", e);
     }
   }
-})
+})*/
 
-// Retweet anything the official NYCTSubway account has to say about the train.
-var matchstring = " " + train + " ";
-Twitter.get("statuses/user_timeline",
-            {screen_name: 'NYCTSubway', count: 100, exclude_replies: true,
-             include_rts: false}, function(error, data) {
-              var skipped = []
-              if (error) {
-                console.log("Got an error:", error);
-                return;
-              }
-              for (var i = 0; i < data.length ; i++) {
-                var text = data[i].text;
-                var id = data[i].id_str;
-                if (text.includes(matchstring)) {
-                  console.log("Attempting to retweet:", data[i].created_at, text, id);
-                  retweet(id);
-                } else {
-                  skipped.push(text);
-                }
-              }
-              console.log("Skipped", skipped.length, "irrelevant tweets.");
-           })
+// users and what to search for in their statuses
+var twittersearch = {
+  "NYCTSubway": " " + train + " ",
+  "amNewYork": train + " train",
+}
+
+// Retweet anything a list of twitter accounts has to say about the train. We
+// could retweet arbitrarily, but people say some weird and unpleasant shit on
+// twitter.
+for (user in twittersearch) {
+  var matchstring = twittersearch[user];
+
+  (function(user, matchstring) {
+    Twitter.get("statuses/user_timeline",
+                {screen_name: user, count: 100, exclude_replies: true,
+                 include_rts: false}, function(error, data) {
+                  var skipped = []
+                  if (error) {
+                    console.log("Got an error:", error);
+                    return;
+                  }
+                  for (var i = 0; i < data.length ; i++) {
+                    var text = data[i].text;
+                    var id = data[i].id_str;
+                    if (text.includes(matchstring)) {
+                      console.log("Attempting to retweet:", data[i].created_at, text, id);
+                      retweet(id);
+                    } else {
+                      skipped.push(text);
+                    }
+                  }
+                  console.log("Skipped", skipped.length, "irrelevant tweets from",
+                              user + ".");
+               });
+  })(user, matchstring);
+}
