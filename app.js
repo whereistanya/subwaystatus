@@ -54,7 +54,7 @@ function retweet(tweetid) {
 // attempt to pull out relevant information. For example, E train information is
 // provided as part of a single ACE status. If the status doesn't include [E],
 // we skip it. We also skip less exciting stuff like alternate routes.
-function make_tweets(html, tldr) {
+function make_tweets(html) {
   var parsedHTML = cheerio.load(html);
   var lines = parsedHTML.text().split(/\r\n\s*\r\n/);
   matchstring = "[" + train + "]";
@@ -73,7 +73,7 @@ function make_tweets(html, tldr) {
       if (text.indexOf("From", 0) === 0) {
         continue;
       }
-      summary = tldr + ":" + text.replace(/(?:\r\n|\r|\n)/g, ' ');
+      summary = text.replace(/(?:\r\n|\r|\n)/g, ' ');
       keep.push(summary.slice(0, 140));
     } else {
       skipped.push(text);
@@ -95,7 +95,7 @@ MTA.getServiceStatus('subway', train).then(function(result) {
     return;
   }
   try {
-    statuses = make_tweets(result.html, result.status);
+    statuses = make_tweets(result.html);
   } catch (e) {
     console.warn("Couldn't create tweets to post:", e);
     return
