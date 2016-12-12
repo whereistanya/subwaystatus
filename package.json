@@ -4,9 +4,11 @@
   "description": "Tweet about subways. Mostly the F train.",
   "main": "app.js",
   "dependencies": {
+    "bluebird": "^3.4.6",
     "cheerio": "^0.22.0",
     "console-stamp": "^0.2.4",
     "mta-service-status": "^0.0.1",
+    "redis": "^2.6.2",
     "twitter": "^1.4.0"
   },
   "devDependencies": {},
