@@ -4,6 +4,7 @@
   "description": "Tweet about subways. Mostly the F train.",
   "main": "app.js",
   "dependencies": {
+    "async": "^2.1.4",
     "bluebird": "^3.4.6",
     "cheerio": "^0.22.0",
     "console-stamp": "^0.2.4",
