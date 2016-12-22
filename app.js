@@ -98,7 +98,7 @@ function set_redis (key) {
   }
 }
 
-var get_statuses = function(callback) {
+var parse_mta_feed = function(callback) {
   var statuses = []
   MTA.getServiceStatus('subway', train).then(function(result) {
     console.log("status of", train, "train:", result.status);
@@ -117,7 +117,7 @@ var get_statuses = function(callback) {
   });
 }
 
-var get_retweetable_ids = function(callback) {
+var get_retweetable_local_news = function(callback) {
   var twittersearch = {
     "NYCTSubway": " " + train + " ",
     "amNewYork": train + " train",
@@ -151,6 +151,10 @@ var get_retweetable_ids = function(callback) {
 
 var tweet_mta_feed = function(statuses, callback) {
   var tried = 0;
+  if (statuses.length == 0) {
+    callback();
+    return;
+  }
   for (var i = 0; i < statuses.length; i++) {
     text = statuses[i];
     redis.exists(text, function(err, reply) {
@@ -173,7 +177,12 @@ var tweet_mta_feed = function(statuses, callback) {
 }
 
 var retweet_local_news = function(ids, callback) {
+  if (ids.length == 0) {
+    callback();
+    return;
+  }
   var tried = 0;
+  
   for (var i = 0; i < ids.length; i++) {
     id = ids[i];
 
@@ -216,13 +225,13 @@ redis.incr("subwaystatus:runs", function(err, reply) {
 async.waterfall(
 [
   function(callback) {
-    get_statuses(callback)
+    parse_mta_feed(callback)
   },
   function(statuses, callback) {
     tweet_mta_feed(statuses, callback)
   },
   function(callback) {
-    get_retweetable_ids(callback)
+    get_retweetable_local_news(callback)
   },
   function(ids, callback) {
     retweet_local_news(ids, callback)
