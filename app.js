@@ -128,7 +128,7 @@ var get_retweetable_local_news = function(callback) {
     var matchstring = twittersearch[user];
 
     Twitter.get("statuses/user_timeline",
-      { screen_name: user, count: 50, exclude_replies: true, include_rts: false
+      { screen_name: user, count: 50, exclude_replies: true, include_rts: true
       }, function(error, data) {
         var skipped = []
         if (error) {
