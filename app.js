@@ -29,7 +29,7 @@ Promise.promisifyAll(Twitter);
 var train = "F"  // The MTA feed doesn't include numbered trains.
 
 function tweet(text, success_cb) {
-  console.log("tweeting", text);
+  console.log("Tweeting:", text);
   var success = 0;
   Twitter.postAsync('statuses/update', {status: this.text})
     .then(function(error, tweet, response) {
@@ -42,13 +42,13 @@ function tweet(text, success_cb) {
 }
 
 function retweet(tweetid, success_cb) {
-  console.log("retweeting", tweetid);
+  console.log("Retweeting:", tweetid);
   var success = 0;
   Twitter.postAsync('statuses/retweet', {id: tweetid})
-    .then(function(error, tweet, response) {
-      console.log("Retweeted:", tweet);
-      success_cb(1);
-    }.bind({text: text}))
+    .then(function() {
+      console.log("Retweeted:", tweetid);
+      success_cb(null);
+    }.bind({tweetid: tweetid}))
     .catch(function (e) {
       success_cb(e);
     });
@@ -103,8 +103,7 @@ var parse_mta_feed = function(callback) {
   MTA.getServiceStatus('subway', train).then(function(result) {
     console.log("status of", train, "train:", result.status);
 
-    if (result.status === "GOOD SERVICE") {
-      console.log("good service");
+    if (result.status === "GOOD SERVICE" || result.status === "PLANNED WORK") {
       callback(null, []);
       return;
     }
@@ -165,7 +164,7 @@ var tweet_mta_feed = function(statuses, callback) {
           if (!err) {
             set_redis(this.text);
           } else {
-            console.log("got an error tweeting", this.text, ":", err);
+            console.log("Got an error tweeting", this.text, ":", err);
           }
         }.bind({text: this.text}));
       }
